@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from bank_universe import all_banks
 import fetch_quotes
 import fetch_fundamentals as ff
-from guzidi_five_dim import (Fundamentals, score_all, buy_signal, SIGNAL_CN)
+from zhaozhao_five_dim import (Fundamentals, score_all, buy_signal, SIGNAL_CN)
 import render_html
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +31,7 @@ def load_fundamentals():
 def main():
     t0 = datetime.now()
     print("=" * 60)
-    print(f"谷子地五维 · 五大行每日追踪  {t0.strftime('%Y-%m-%d %H:%M')}")
+    print(f"招招五维 · 五大行每日追踪  {t0.strftime('%Y-%m-%d %H:%M')}")
     print("=" * 60)
     banks = all_banks()
 
@@ -85,7 +85,7 @@ def main():
             div_yield=q.get("div_yield"), price=q.get("price"),
         )
         sc = score_all(fun)
-        sig = buy_signal(fun)
+        sig = buy_signal(fun, valuation_style=b.valuation_style)
         rows.append({
             "code": b.code, "name": b.name, "short": b.short, "color": b.color,
             "price": q.get("price"), "pe": q.get("pe"), "pb": q.get("pb"),
