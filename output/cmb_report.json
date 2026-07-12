@@ -1,7 +1,7 @@
 {
   "tracker": "cmb-tracker",
   "model": "招招五维模型",
-  "generated_at": "2026-07-12T11:18:36.116452+08:00",
+  "generated_at": "2026-07-12T12:01:39.369501+08:00",
   "data_date": "2026-07-12",
   "summary": {
     "total_banks": 6,
@@ -20,11 +20,11 @@
       "pe": 6.17,
       "pb": 0.821,
       "div_yield": 5.423,
-      "score_total": 82.6,
+      "score_total": 80.9,
       "score_dims": {
         "asset_quality": 14.5,
         "liability": 14.8,
-        "intermediary": 19.4,
+        "intermediary": 17.7,
         "capital": 17.4,
         "management": 16.5
       },
@@ -44,11 +44,11 @@
       "pe": 7.035,
       "pb": 0.663,
       "div_yield": 4.366,
-      "score_total": 48.6,
+      "score_total": 51.4,
       "score_dims": {
         "asset_quality": 9.6,
         "liability": 8.7,
-        "intermediary": 8.6,
+        "intermediary": 11.4,
         "capital": 14.5,
         "management": 7.2
       },
@@ -68,11 +68,11 @@
       "pe": 7.676,
       "pb": 0.74,
       "div_yield": 4.187,
-      "score_total": 50.1,
+      "score_total": 51.9,
       "score_dims": {
         "asset_quality": 11.0,
         "liability": 6.7,
-        "intermediary": 10.0,
+        "intermediary": 11.8,
         "capital": 14.2,
         "management": 8.2
       },
@@ -92,11 +92,11 @@
       "pe": 7.409,
       "pb": 0.771,
       "div_yield": 4.013,
-      "score_total": 56.2,
+      "score_total": 59.6,
       "score_dims": {
         "asset_quality": 12.6,
         "liability": 13.4,
-        "intermediary": 7.9,
+        "intermediary": 11.3,
         "capital": 12.1,
         "management": 10.2
       },
@@ -116,11 +116,11 @@
       "pe": 7.606,
       "pb": 0.683,
       "div_yield": 4.318,
-      "score_total": 40.2,
+      "score_total": 48.1,
       "score_dims": {
         "asset_quality": 10.8,
         "liability": 4.1,
-        "intermediary": 9.3,
+        "intermediary": 17.2,
         "capital": 9.7,
         "management": 6.3
       },
@@ -140,11 +140,11 @@
       "pe": 6.736,
       "pb": 0.872,
       "div_yield": 2.117,
-      "score_total": 59.1,
+      "score_total": 59.0,
       "score_dims": {
         "asset_quality": 18.7,
         "liability": 7.1,
-        "intermediary": 12.2,
+        "intermediary": 12.1,
         "capital": 9.1,
         "management": 12.0
       },

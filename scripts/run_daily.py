@@ -36,26 +36,27 @@ def main():
     print("=" * 60)
     banks = all_banks()
 
-    # 1) 财务底表（季度更新；每日尝试轻量刷新 BVPS/ROE）
+    # 1) 财务底表（每日刷新 BVPS/ROE/EPS + 非息占比；质量字段以底表真源）
     fund_cache = load_fundamentals()
     print("\n[1] 财务底表（fundamentals.json）...")
-    refreshed = ff.refresh_light(banks, fund_cache)  # 返回 {code: {...}}
-    # 合并：刷新结果优先，缺失字段用缓存
+    refreshed = ff.refresh_light(banks, fund_cache)   # BVPS/ROE/EPS（动态报告期）
+    nii = ff.refresh_nii(banks)                       # 非息占比（半自动，必盈）
     merged = {}
     for b in banks:
         base = fund_cache.get(b.code, {})
-        new = refreshed.get(b.code, {})
         rec = dict(base)
-        rec.update({k: v for k, v in new.items() if v is not None})
+        for src in (refreshed.get(b.code, {}), nii.get(b.code, {})):
+            rec.update({k: v for k, v in src.items() if v is not None})
         rec["code"] = b.code
         rec["name"] = b.name
         rec.setdefault("as_of", base.get("as_of", "未知"))
         merged[b.code] = rec
-    # 写回（仅当刷新成功有变化）
-    if any(refreshed.values()):
+    # 写回（仅当有新数据；质量字段因不在 refreshed/nii 中，原样保留）
+    if any(refreshed.values()) or any(nii.values()):
         with open(FUND_JSON, "w", encoding="utf-8") as f:
             json.dump(merged, f, ensure_ascii=False, indent=2)
-        print(f"    已刷新 {len([1 for v in refreshed.values() if v])} 只的 BVPS/ROE")
+        print(f"    已刷新 {len([1 for v in refreshed.values() if v])} 只 BVPS/ROE/EPS、"
+              f"{len([1 for v in nii.values() if v])} 只非息占比")
 
     # 2) 行情
     bvps_map = {b.code: merged[b.code].get("bvps") for b in banks}

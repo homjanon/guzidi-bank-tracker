@@ -35,6 +35,7 @@ jobs:
 
       - name: Run daily tracker
         env:
+          TZ: Asia/Shanghai
           BIYING_API_KEY: ${{ secrets.BIYING_API_KEY }}
         run: |
           cd scripts

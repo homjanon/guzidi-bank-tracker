@@ -2,11 +2,22 @@
   "600036": {
     "as_of": "2026Q1",
     "manual": true,
+    "_manual_maintain": [
+      "npl",
+      "provision_coverage",
+      "core_tier1",
+      "current_deposit_ratio",
+      "retail_deposit_ratio",
+      "rorwa",
+      "div_payout",
+      "retail_focus",
+      "div_ps"
+    ],
     "npl": 1.37,
     "provision_coverage": 437.0,
     "current_deposit_ratio": 52.0,
     "retail_deposit_ratio": 58.0,
-    "non_interest_ratio": 39.0,
+    "non_interest_ratio": 36.0,
     "rorwa": 2.4,
     "core_tier1": 10.68,
     "roe": 13.48,
@@ -16,16 +27,28 @@
     "div_ps": 2.0,
     "eps": 1.49,
     "code": "600036",
-    "name": "招商银行"
+    "name": "招商银行",
+    "nii_as_of": "20260331"
   },
   "601398": {
     "as_of": "2026Q1",
     "manual": true,
+    "_manual_maintain": [
+      "npl",
+      "provision_coverage",
+      "core_tier1",
+      "current_deposit_ratio",
+      "retail_deposit_ratio",
+      "rorwa",
+      "div_payout",
+      "retail_focus",
+      "div_ps"
+    ],
     "npl": 1.38,
     "provision_coverage": 213.0,
     "current_deposit_ratio": 48.0,
     "retail_deposit_ratio": 32.0,
-    "non_interest_ratio": 23.0,
+    "non_interest_ratio": 26.8,
     "rorwa": 1.45,
     "core_tier1": 13.55,
     "roe": 8.83,
@@ -35,16 +58,28 @@
     "div_ps": 0.32,
     "eps": 0.24,
     "code": "601398",
-    "name": "工商银行"
+    "name": "工商银行",
+    "nii_as_of": "20260331"
   },
   "601939": {
     "as_of": "2026Q1",
     "manual": true,
+    "_manual_maintain": [
+      "npl",
+      "provision_coverage",
+      "core_tier1",
+      "current_deposit_ratio",
+      "retail_deposit_ratio",
+      "rorwa",
+      "div_payout",
+      "retail_focus",
+      "div_ps"
+    ],
     "npl": 1.36,
     "provision_coverage": 240.0,
     "current_deposit_ratio": 45.0,
     "retail_deposit_ratio": 28.0,
-    "non_interest_ratio": 25.0,
+    "non_interest_ratio": 27.4,
     "rorwa": 1.42,
     "core_tier1": 13.87,
     "roe": 9.85,
@@ -54,16 +89,28 @@
     "div_ps": 0.42,
     "eps": 0.33,
     "code": "601939",
-    "name": "建设银行"
+    "name": "建设银行",
+    "nii_as_of": "20260331"
   },
   "601288": {
     "as_of": "2026Q1",
     "manual": true,
+    "_manual_maintain": [
+      "npl",
+      "provision_coverage",
+      "core_tier1",
+      "current_deposit_ratio",
+      "retail_deposit_ratio",
+      "rorwa",
+      "div_payout",
+      "retail_focus",
+      "div_ps"
+    ],
     "npl": 1.35,
     "provision_coverage": 305.0,
     "current_deposit_ratio": 55.0,
     "retail_deposit_ratio": 42.0,
-    "non_interest_ratio": 22.0,
+    "non_interest_ratio": 26.7,
     "rorwa": 1.38,
     "core_tier1": 11.28,
     "roe": 10.59,
@@ -73,16 +120,28 @@
     "div_ps": 0.25,
     "eps": 0.2,
     "code": "601288",
-    "name": "农业银行"
+    "name": "农业银行",
+    "nii_as_of": "20260331"
   },
   "601988": {
     "as_of": "2026Q1",
     "manual": true,
+    "_manual_maintain": [
+      "npl",
+      "provision_coverage",
+      "core_tier1",
+      "current_deposit_ratio",
+      "retail_deposit_ratio",
+      "rorwa",
+      "div_payout",
+      "retail_focus",
+      "div_ps"
+    ],
     "npl": 1.27,
     "provision_coverage": 215.0,
     "current_deposit_ratio": 40.0,
     "retail_deposit_ratio": 20.0,
-    "non_interest_ratio": 24.0,
+    "non_interest_ratio": 35.1,
     "rorwa": 1.28,
     "core_tier1": 10.43,
     "roe": 8.46,
@@ -92,16 +151,28 @@
     "div_ps": 0.25,
     "eps": 0.18,
     "code": "601988",
-    "name": "中国银行"
+    "name": "中国银行",
+    "nii_as_of": "20260331"
   },
   "002142": {
     "as_of": "2026Q1",
     "manual": true,
+    "_manual_maintain": [
+      "npl",
+      "provision_coverage",
+      "core_tier1",
+      "current_deposit_ratio",
+      "retail_deposit_ratio",
+      "rorwa",
+      "div_payout",
+      "retail_focus",
+      "div_ps"
+    ],
     "npl": 0.76,
     "provision_coverage": 400.0,
     "current_deposit_ratio": 45.0,
     "retail_deposit_ratio": 30.0,
-    "non_interest_ratio": 28.0,
+    "non_interest_ratio": 27.8,
     "rorwa": 1.35,
     "core_tier1": 9.8,
     "roe": 14.38,
@@ -111,6 +182,7 @@
     "div_ps": 0.65,
     "eps": 1.24,
     "code": "002142",
-    "name": "宁波银行"
+    "name": "宁波银行",
+    "nii_as_of": "20260331"
   }
 }
