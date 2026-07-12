@@ -2,7 +2,7 @@
 <html lang="zh-CN"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>招招五维 · 五大行追踪</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
 <style>
  *{box-sizing:border-box} body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
    margin:0;background:#f5f6f8;color:#222}
@@ -30,7 +30,7 @@
 </style></head>
 <body><div class="wrap">
 <header><h1>招招五维模型 · 五大行每日追踪</h1>
-<div class="meta">更新时间：2026-07-12 04:03 ｜ 标的：招商/工商/建设/农业/中国/宁波（交行已排除）｜ 数据源：腾讯/新浪/akshare/baostock</div></header>
+<div class="meta">更新时间：2026-07-12 12:29 ｜ 标的：招商/工商/建设/农业/中国/宁波（交行已排除）｜ 数据源：腾讯/新浪/akshare/baostock</div></header>
 
 <div class="cards">
   <div class="card"><div class="t">追踪标的数</div><div class="v">6</div></div>
@@ -40,11 +40,12 @@
 </div>
 
 <table>
-<tr><th>银行</th><th class="num">现价</th><th class="num">PE</th><th class="num">PB</th><th class="num">股息率%</th><th>五维(质/负/中/资/管)</th><th class="num">总分</th><th>信号</th></tr>
+<tr><th>银行</th><th class="num">现价</th><th class="num">买入区间(元)</th><th class="num">PE</th><th class="num">PB</th><th class="num">股息率%</th><th>五维(质量/负债/中间/资本/管理)</th><th class="num">总分</th><th>信号</th></tr>
 
         <tr>
           <td><b>招商银行</b><br><span class="code">600036</span></td>
           <td class="num">36.88</td>
+          <td class="num">31.44 ~ 40.43<br><span style="color:#2e7d32;font-size:11px">区间内</span></td>
           <td class="num">6.17</td>
           <td class="num">0.821</td>
           <td class="num">5.423</td>
@@ -55,6 +56,7 @@
         <tr>
           <td><b>工商银行</b><br><span class="code">601398</span></td>
           <td class="num">7.33</td>
+          <td class="num">7.74 ~ 9.95<br><span style="color:#c23531;font-size:11px">低于强买线</span></td>
           <td class="num">7.035</td>
           <td class="num">0.663</td>
           <td class="num">4.366</td>
@@ -65,6 +67,7 @@
         <tr>
           <td><b>建设银行</b><br><span class="code">601939</span></td>
           <td class="num">10.03</td>
+          <td class="num">9.49 ~ 12.20<br><span style="color:#2e7d32;font-size:11px">区间内</span></td>
           <td class="num">7.676</td>
           <td class="num">0.74</td>
           <td class="num">4.187</td>
@@ -75,6 +78,7 @@
         <tr>
           <td><b>农业银行</b><br><span class="code">601288</span></td>
           <td class="num">6.23</td>
+          <td class="num">5.66 ~ 7.27<br><span style="color:#2e7d32;font-size:11px">区间内</span></td>
           <td class="num">7.409</td>
           <td class="num">0.771</td>
           <td class="num">4.013</td>
@@ -85,6 +89,7 @@
         <tr>
           <td><b>中国银行</b><br><span class="code">601988</span></td>
           <td class="num">5.79</td>
+          <td class="num">5.93 ~ 7.63<br><span style="color:#c23531;font-size:11px">低于强买线</span></td>
           <td class="num">7.606</td>
           <td class="num">0.683</td>
           <td class="num">4.318</td>
@@ -95,6 +100,7 @@
         <tr>
           <td><b>宁波银行</b><br><span class="code">002142</span></td>
           <td class="num">30.7</td>
+          <td class="num">27.35 ~ 36.46<br><span style="color:#2e7d32;font-size:11px">区间内</span></td>
           <td class="num">6.736</td>
           <td class="num">0.872</td>
           <td class="num">2.117</td>
@@ -113,6 +119,8 @@
 <b>方法论</b>：评分采用招招五维模型（资产质量/负债结构/中间业务/资本实力/管理层，每维0-20，总分0-100）。
 财务字段（不良率、拨备覆盖率、非息占比、资本充足率、ROE等）为季度数据，来自最近一期财报，每日不更新；
 现价/PE/PB/股息率为每日盘后刷新。买入信号基于 PB 破净程度与股息率，结合五维总分判定。
+<b>买入区间</b>：由五维引擎按估值风格动态计算——收益型（招行/四大行）取 PB 0.7~0.9 对应价，成长型（宁波）取 PE 6~8 对应价；
+「区间内」为绿色、「低于强买线」为红色（更划算）、「高于区间」为橙色。
 <b>免责</b>：本项目仅作个人研究记录，不构成任何投资建议。
 </div>
 </div>

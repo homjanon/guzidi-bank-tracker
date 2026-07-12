@@ -17,6 +17,7 @@ SIGNAL_CN = {
 }
 
 DIM_NAMES = ["资产质量", "负债结构", "中间业务", "资本实力", "管理层"]
+DIM_SHORT = ["质量", "负债", "中间", "资本", "管理"]
 DIM_KEYS = ["asset_quality", "liability", "intermediary", "capital", "management"]
 
 def _signal_badge(sig):
@@ -35,10 +36,29 @@ def render(rows, fund, t0, out_path):
         )
         total = sc["total"]
         total_color = "#c23531" if total >= 100 else ("#d48265" if total >= 85 else "#e6a23c")
+        # 买入区间（由五维引擎按估值风格算出：yield=PB0.7~0.9 / growth=PE6~8 对应价）
+        zl = r["signal"].get("zone_low")
+        zh = r["signal"].get("zone_high")
+        price = r["price"]
+        if zl is not None and zh is not None:
+            if price is not None:
+                if price < zl:
+                    status, scolor = "低于强买线", "#c23531"
+                elif price <= zh:
+                    status, scolor = "区间内", "#2e7d32"
+                else:
+                    status, scolor = "高于区间", "#e6a23c"
+            else:
+                status, scolor = "—", "#999"
+            zone_cell = (f'{zl:.2f} ~ {zh:.2f}'
+                         f'<br><span style="color:{scolor};font-size:11px">{status}</span>')
+        else:
+            zone_cell = "—"
         trs.append(f"""
         <tr>
           <td><b>{r['name']}</b><br><span class="code">{r['code']}</span></td>
           <td class="num">{r['price'] if r['price'] else '—'}</td>
+          <td class="num">{zone_cell}</td>
           <td class="num">{r['pe'] if r['pe'] else '—'}</td>
           <td class="num">{r['pb'] if r['pb'] else '—'}</td>
           <td class="num">{r['div_yield'] if r['div_yield'] else '—'}</td>
@@ -57,7 +77,7 @@ def render(rows, fund, t0, out_path):
 <html lang="zh-CN"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>招招五维 · 五大行追踪</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
 <style>
  *{{box-sizing:border-box}} body{{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
    margin:0;background:#f5f6f8;color:#222}}
@@ -95,7 +115,7 @@ def render(rows, fund, t0, out_path):
 </div>
 
 <table>
-<tr><th>银行</th><th class="num">现价</th><th class="num">PE</th><th class="num">PB</th><th class="num">股息率%</th><th>五维(质/负/中/资/管)</th><th class="num">总分</th><th>信号</th></tr>
+<tr><th>银行</th><th class="num">现价</th><th class="num">买入区间(元)</th><th class="num">PE</th><th class="num">PB</th><th class="num">股息率%</th><th>五维(质量/负债/中间/资本/管理)</th><th class="num">总分</th><th>信号</th></tr>
 {''.join(trs)}
 </table>
 
@@ -108,6 +128,8 @@ def render(rows, fund, t0, out_path):
 <b>方法论</b>：评分采用招招五维模型（资产质量/负债结构/中间业务/资本实力/管理层，每维0-20，总分0-100）。
 财务字段（不良率、拨备覆盖率、非息占比、资本充足率、ROE等）为季度数据，来自最近一期财报，每日不更新；
 现价/PE/PB/股息率为每日盘后刷新。买入信号基于 PB 破净程度与股息率，结合五维总分判定。
+<b>买入区间</b>：由五维引擎按估值风格动态计算——收益型（招行/四大行）取 PB 0.7~0.9 对应价，成长型（宁波）取 PE 6~8 对应价；
+「区间内」为绿色、「低于强买线」为红色（更划算）、「高于区间」为橙色。
 <b>免责</b>：本项目仅作个人研究记录，不构成任何投资建议。
 </div>
 </div>
@@ -157,7 +179,7 @@ def render_history(history_path, out_path):
              for i, c in enumerate(codes)]
     html = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>历史趋势</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
 <style>body{{font-family:-apple-system,"PingFang SC",sans-serif;margin:0;background:#f5f6f8}}
 .wrap{{max-width:1000px;margin:0 auto;padding:24px}}
 .panel{{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:18px}}
