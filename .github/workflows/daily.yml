@@ -1,13 +1,24 @@
 name: 招招五维·五大行每日追踪
 
+# 自动运行触发方案（盘后 · 仅交易日 · 单次）
+# =====================================================================
+# 与 xiaoxu-fear (xxfi-daily.yml) 保持一致：
+#   1) 交易日筛选：cron 仅覆盖周一至五；且 check 步骤用交易日历
+#      (tool_trade_date_hist_sina) 精确排除法定节假日/休市日（含调休）。
+#   2) 执行时机：cron "30 7 * * 1-5" = 北京 15:30。GitHub Actions 实际存在约 1h 延迟，
+#      实跑时间为 16:30 左右，恰好盘后数据定稿窗口。
+#   3) 每日频次：盘后单次。非交易日由 check 步骤 skip。
+#
+# 手动触发（workflow_dispatch）：
+#   任意时间（含周末/非交易日）强制运行当前脚本。
+# =====================================================================
 on:
   schedule:
-    # 北京时间 16:30 盘后（UTC 08:30），周一至周五
-    - cron: "30 8 * * 1-5"
-  workflow_dispatch:        # 允许手动触发（测试用）
+    - cron: "30 7 * * 1-5"
+  workflow_dispatch:
 
 permissions:
-  contents: write           # 自动 commit history.jsonl + docs
+  contents: write
 
 concurrency:
   group: cmb-tracker
@@ -33,7 +44,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # 交易日判断：非交易日(节假日/周末) → skip
+      # （手动触发时仍会继续，直接取当日或最近交易日数据）
+      - name: 判断交易日
+        id: check
+        run: |
+          python - <<'PY'
+          import akshare as ak, datetime, os
+          today = datetime.date.today().strftime("%Y-%m-%d")
+          cal = ak.tool_trade_date_hist_sina()
+          is_trade = today in {str(x)[:10] for x in cal["trade_date"].tolist()}
+          if not is_trade:
+              print(f"{today} 非交易日（节假日/周末），跳过当日计算（手动触发仍可执行）")
+              open(os.environ["GITHUB_OUTPUT"], "a").write("trade=0\n")
+              raise SystemExit(0)
+          print(f"{today} 交易日，执行五维追踪")
+          open(os.environ["GITHUB_OUTPUT"], "a").write("trade=1\n")
+          PY
+
       - name: Run daily tracker
+        if: steps.check.outputs.trade == '1' || github.event_name == 'workflow_dispatch'
         env:
           TZ: Asia/Shanghai
           BIYING_API_KEY: ${{ secrets.BIYING_API_KEY }}
@@ -42,6 +72,7 @@ jobs:
           python run_daily.py
 
       - name: Commit & push results
+        if: steps.check.outputs.trade == '1' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -49,6 +80,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "无变化，跳过提交"
           else
-            git commit -m "chore: 每日追踪更新 $(date +%Y-%m-%d)"
+            git commit -m "chore: daily update (${{ github.run_id }})"
             git push
           fi
