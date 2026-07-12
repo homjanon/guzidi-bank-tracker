@@ -39,7 +39,7 @@
 - **财务底表（真源）**：`fundamentals.json` 保存各银行五维原始输入与每日刷新结果。
   - `scripts/fetch_fundamentals.py → refresh_light()`：**每日**用 akshare `stock_yjbb_em` 刷新每股净资产(BVPS)/ROE/**EPS（均按报告期年化）**，保证 PB 与派息率口径精确。
   - `refresh_nii()`：非息收入占比 —— **半自动**，每日用必盈利润表 API 推算，需 `BIYING_API_KEY` 环境变量；缺 key/失败则保留手工值。
-  - `refresh_div()`：每股分红 `div_ps` —— **自动**，每日用 akshare `stock_history_dividend_detail` 取近 365 天「已实施」派息（元/10 股）求和÷10，得 TTM 每股分红。
+  - `refresh_div()`：每股分红 `div_ps` —— **自动**，每日用 akshare `stock_history_dividend_detail` 按股权登记日倒序取最新 2 次「已实施」派息（元/10 股）求和÷10，等于最近一个完整年度（本组合均为半年派，规避滚动 365 天窗口跨年抓到 3 次导致股息率/派息率虚高）。
   - 派息率 `div_payout`：**自动**，由 `div_ps ÷ 年化EPS` 计算（不再手工维护）。
   - `refresh_deep()`：保留接口（当前休眠），质量字段仍按季度手工维护于底表。
 - **为什么不全自动**：akshare 1.18.x 的 `stock_financial_analysis_indicator` 已失效，利润表/资产负债表原始科目列名漂移，港股接口在沙箱不稳定。质量字段（不良率/拨备/核心一级资本充足率/存款结构/RORWA/零售护城河）目前人工季度更新；BVPS/ROE/EPS/div_ps/非息占比已实现自动或半自动刷新。

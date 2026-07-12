@@ -1,13 +1,13 @@
 {
   "tracker": "cmb-tracker",
   "model": "招招五维模型",
-  "generated_at": "2026-07-13T00:22:17.851185+08:00",
+  "generated_at": "2026-07-13T00:31:16.201877+08:00",
   "data_date": "2026-07-13",
   "summary": {
     "total_banks": 6,
     "strong_buy": 0,
-    "buy": 4,
-    "hold": 2,
+    "buy": 3,
+    "hold": 3,
     "reduce": 0
   },
   "banks": [
@@ -91,21 +91,21 @@
       "price": 6.23,
       "pe": 7.409,
       "pb": 0.771,
-      "div_yield": 6.019,
-      "score_total": 61.6,
+      "div_yield": 3.997,
+      "score_total": 60.0,
       "score_dims": {
         "asset_quality": 12.6,
         "liability": 13.4,
         "intermediary": 11.3,
         "capital": 12.1,
-        "management": 12.2
+        "management": 10.6
       },
-      "signal": "BUY",
-      "signal_cn": "买入",
+      "signal": "HOLD",
+      "signal_cn": "持有",
       "valuation_style": "yield",
       "zone_low": 5.66,
       "zone_high": 7.27,
-      "reason": "PB0.77破净附近 + 股息6.0%，低估"
+      "reason": "PB0.77接近净资产，合理偏高，持有"
     },
     {
       "code": "601988",
@@ -139,14 +139,14 @@
       "price": 30.7,
       "pe": 6.736,
       "pb": 0.872,
-      "div_yield": 6.84,
-      "score_total": 63.6,
+      "div_yield": 3.909,
+      "score_total": 59.4,
       "score_dims": {
         "asset_quality": 18.7,
         "liability": 7.1,
         "intermediary": 12.1,
         "capital": 9.1,
-        "management": 16.6
+        "management": 12.4
       },
       "signal": "BUY",
       "signal_cn": "买入",

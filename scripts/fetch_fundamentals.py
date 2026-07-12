@@ -7,7 +7,7 @@
   银行的五维财务字段分三类自动化程度：
     [自动]   BVPS / ROE(年化) / EPS(年化) / div_ps(每股分红)
              —— BVPS/ROE/EPS 每日用 akshare stock_yjbb_em 动态报告期刷新；
-                div_ps 每日用 akshare stock_history_dividend_detail 取近365天已实施派息求和÷10
+                div_ps 每日用 akshare stock_history_dividend_detail 取按股权登记日倒序最新2次已实施派息求和÷10（=最近一个完整年度，避免滚动365天窗口跨年抓到3次虚高）
     [半自动] 非息收入占比            —— 每日用必盈利润表(income)推算，需 BIYING_API_KEY，缺则回退手工
     [手工]   不良率/拨备/核心一级资本充足率/存款结构/RORWA/分红率(div_payout 由 div_ps÷年化EPS 自动算)
              —— 季度人工维护，见 fundamentals.json 的 _manual_maintain 标记，写回时不被覆盖
@@ -133,11 +133,12 @@ def refresh_nii(banks) -> dict:
 
 def refresh_div(banks) -> dict:
     """自动获取每股分红 (div_ps)。派息单位=元/10股→÷10。
-    近365天内已实施的分红求和，得年度总每股分红。
+    取最近一个完整年度 = 按股权登记日倒序取最新 2 次「实施」派息求和÷10。
+    说明：组合内 6 家银行均为半年派，最新 2 次恰好等于一个财年，避免滚动 365
+    天窗口在跨年交界抓到 3 次分红导致 div_ps / 股息率 / 派息率虚高。
     返回 {code: {div_ps, div_as_of}}（div_payout 在 run_daily.py merge 阶段根据 eps 计算）。"""
     out = {}
     today_d = datetime.now().date()
-    cutoff = today_d - timedelta(days=365)
     try:
         import akshare as ak
         import pandas as pd
@@ -147,23 +148,28 @@ def refresh_div(banks) -> dict:
             df = ak.stock_history_dividend_detail(symbol=b.code, indicator="分红")
             if df is None or df.empty:
                 continue
-            imp = df[df["进度"] == "实施"]
+            imp = df[df["进度"] == "实施"].copy()
             if imp.empty:
                 continue
-            total_10 = 0.0
+            # 解析股权登记日为 date，仅保留最近 18 个月内，按倒序取最新 2 笔
+            recs = []
             for _, r in imp.iterrows():
                 d = r.get("股权登记日")
                 if pd.isna(d):
                     continue
                 if hasattr(d, "date"):
                     d = d.date()
-                if d >= cutoff:
-                    total_10 += float(r["派息"])
+                if (today_d - d).days <= 540:  # 18 个月
+                    recs.append((d, float(r["派息"])))
+            recs.sort(key=lambda x: x[0], reverse=True)
+            pick = recs[:2] if len(recs) >= 2 else recs
+            total_10 = sum(x[1] for x in pick)
             if total_10 > 0:
                 div_ps = round(total_10 / 10, 3)
                 rec = {"div_ps": div_ps, "div_as_of": today_d.strftime("%Y%m%d")}
                 out[b.code] = rec
-                print(f"    [refresh_div] {b.code} div_ps={div_ps} (近365天派息合计{total_10}/10)")
+                dates = ",".join(str(x[0]) for x in pick)
+                print(f"    [refresh_div] {b.code} div_ps={div_ps} (近2次派息 {dates}, 合计{total_10}/10)")
     except Exception as e:
         print(f"    [refresh_div] 失败: {e}")
     return out
