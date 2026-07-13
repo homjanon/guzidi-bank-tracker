@@ -27,7 +27,9 @@
     "code": "600036",
     "name": "招商银行",
     "nii_as_of": "20260331",
-    "div_as_of": "20260713"
+    "div_as_of": "20260713",
+    "net_interest_margin": 1.83,
+    "net_interest_spread": 1.77
   },
   "601398": {
     "as_of": "2026Q1",
@@ -57,7 +59,8 @@
     "code": "601398",
     "name": "工商银行",
     "nii_as_of": "20260331",
-    "div_as_of": "20260713"
+    "div_as_of": "20260713",
+    "net_interest_margin": 1.29
   },
   "601939": {
     "as_of": "2026Q1",
@@ -87,7 +90,8 @@
     "code": "601939",
     "name": "建设银行",
     "nii_as_of": "20260331",
-    "div_as_of": "20260713"
+    "div_as_of": "20260713",
+    "net_interest_margin": 1.36
   },
   "601288": {
     "as_of": "2026Q1",
@@ -117,7 +121,8 @@
     "code": "601288",
     "name": "农业银行",
     "nii_as_of": "20260331",
-    "div_as_of": "20260713"
+    "div_as_of": "20260713",
+    "net_interest_margin": 1.26
   },
   "601988": {
     "as_of": "2026Q1",
@@ -147,7 +152,8 @@
     "code": "601988",
     "name": "中国银行",
     "nii_as_of": "20260331",
-    "div_as_of": "20260713"
+    "div_as_of": "20260713",
+    "net_interest_margin": 1.26
   },
   "002142": {
     "as_of": "2026Q1",
@@ -177,6 +183,8 @@
     "code": "002142",
     "name": "宁波银行",
     "nii_as_of": "20260331",
-    "div_as_of": "20260713"
+    "div_as_of": "20260713",
+    "net_interest_margin": 1.73,
+    "net_interest_spread": 1.73
   }
 }
