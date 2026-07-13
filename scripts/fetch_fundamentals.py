@@ -9,9 +9,9 @@
              —— BVPS/ROE/EPS 每日用 akshare stock_yjbb_em 动态报告期刷新；
                 div_ps 每日用 akshare stock_history_dividend_detail 取按股权登记日倒序最新2次已实施派息求和÷10（=最近一个完整年度，避免滚动365天窗口跨年抓到3次虚高）
     [半自动] 非息收入占比            —— 每日用必盈利润表(income)推算，需 BIYING_API_KEY，缺则回退手工
-    [手工]   不良率/拨备/核心一级资本充足率/存款结构/RORWA/分红率(div_payout 由 div_ps÷年化EPS 自动算)
-             —— 季度人工维护，见 fundamentals.json 的 _manual_maintain 标记，写回时不被覆盖
-  → 设计：refresh_light() + refresh_nii() 每日调用；质量字段以 fundamentals.json 为真源。
+    [手工]   拨备覆盖率/核心一级资本充足率/存款结构/RORWA/零售护城河
+             —— 季度人工维护，见 fundamentals.json 的 _manual_maintain 标记，写回时不被 refresh_deep 覆盖
+  → 设计：refresh_light() + refresh_nii() + refresh_deep() 每日调用；手工质量字段以 fundamentals.json 为真源。
 """
 
 from datetime import datetime, timedelta
@@ -176,14 +176,17 @@ def refresh_div(banks) -> dict:
 
 
 def refresh_deep(banks) -> dict:
-    """自动：东财 F10 财务指标（净息差 NIM 等银行专属指标）。
-    返回 {code: {net_interest_margin, net_interest_spread}}。
+    """自动：东财 F10 财务指标（净息差 NIM 等银行专属指标 + 监管比率）。
+    返回 {code: {net_interest_margin, net_interest_spread, npl, capital_adequacy, tier1_adequacy, provision_ratio}}。
 
-    注：不良率 / 拨备覆盖率 / 核心一级资本充足率 EM 不直接提供可靠比率，故仍保持手工维护：
-      · NON_PERFORMING_LOAN 为不良额(元)，÷贷款算出的不良率(≈0.94%)与招行披露口径(≈1.37%)不符；
-      · LOAN_PROVISION_RATIO 实为拨贷比(≈3.63%)，非拨备覆盖率(≈437%)；
-      · RISK_COVERAGE / 核心一级资本充足率 在 EM 中为空（None）。
-    因此本函数只自动化净息差这类「直接可得」的指标，质量字段继续走 _manual_maintain 手工。"""
+    实测可用字段（stock_financial_analysis_indicator_em，A类 HTTP/1.1 直连）：
+      · NET_INTEREST_MARGIN / NET_INTEREST_SPREAD → 净息差 NIM / 价差（可靠）
+      · NONPERLOAN → 不良贷款率(%)，多行实测与披露吻合（招行 0.94 / 宁波 0.76 / 工行 1.31 / 建行 1.31）
+      · NEWCAPITALADER → 资本充足率(总)(%)，部分行 EM 返回 nan
+      · FIRST_ADEQUACY_RATIO → 一级资本充足率(%)，作 core_tier1 代理
+      · LOAN_PROVISION_RATIO → 拨贷比(%)，非拨备覆盖率
+    注：核心一级(core_tier1)/杠杆率(CAPITAL_LEVERAGE_RATIO=None)/拨备覆盖率(无直接字段)/存款结构/RORWA 在 EM 无对应字段，仍按季度手工维护于底表。
+    所有字段含 NaN 守卫（NaN != NaN），nan 行跳过、保留底表手工值，不回退、不报错。"""
     out = {}
     try:
         import akshare as ak
@@ -205,6 +208,18 @@ def refresh_deep(banks) -> dict:
             sp = _f(row.get("NET_INTEREST_SPREAD"))
             if sp is not None and sp == sp:
                 rec["net_interest_spread"] = round(sp, 2)
+            npl = _f(row.get("NONPERLOAN"))
+            if npl is not None and npl == npl:
+                rec["npl"] = round(npl, 2)
+            car = _f(row.get("NEWCAPITALADER"))
+            if car is not None and car == car:
+                rec["capital_adequacy"] = round(car, 2)
+            t1 = _f(row.get("FIRST_ADEQUACY_RATIO"))
+            if t1 is not None and t1 == t1:
+                rec["tier1_adequacy"] = round(t1, 2)
+            plr = _f(row.get("LOAN_PROVISION_RATIO"))
+            if plr is not None and plr == plr:
+                rec["provision_ratio"] = round(plr, 2)
             if rec:
                 out[b.code] = rec
     except Exception as e:

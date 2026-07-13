@@ -41,8 +41,14 @@
   - `refresh_nii()`：非息收入占比 —— **半自动**，每日用必盈利润表 API 推算，需 `BIYING_API_KEY` 环境变量；缺 key/失败则保留手工值。
   - `refresh_div()`：每股分红 `div_ps` —— **自动**，每日用 akshare `stock_history_dividend_detail` 按股权登记日倒序取最新 2 次「已实施」派息（元/10 股）求和÷10，等于最近一个完整年度（本组合均为半年派，规避滚动 365 天窗口跨年抓到 3 次导致股息率/派息率虚高）。
   - 派息率 `div_payout`：**自动**，由 `div_ps ÷ 年化EPS` 计算（不再手工维护）。
-  - `refresh_deep()`：**已启用**，每日用 akshare `stock_financial_analysis_indicator_em` 自动刷新银行专属指标（净息差 NIM / 净息差价差 spread，按报告期取最新一期），结果写回底表 `net_interest_margin`/`net_interest_spread`。注：不良率/拨备/资本充足率 EM 不可靠，仍按季度手工维护。
-- **为什么不全自动**：akshare 1.18.x 的 `stock_financial_analysis_indicator` 已失效，利润表/资产负债表原始科目列名漂移，港股接口在沙箱不稳定。质量字段（不良率/拨备/核心一级资本充足率/存款结构/RORWA/零售护城河）目前人工季度更新；BVPS/ROE/EPS/div_ps/非息占比已实现自动或半自动刷新。
+  - `refresh_deep()`：**已启用并扩展**，每日用 akshare `stock_financial_analysis_indicator_em`（`按报告期` 取最新一期）自动刷新银行专属指标，写回底表：
+     · `net_interest_margin` / `net_interest_spread` —— 净息差 NIM / 价差（可靠）
+     · `npl` —— 不良贷款率(%)，多行实测与披露吻合（招行 0.94 / 宁波 0.76 / 工行 1.31 / 建行 1.31）
+     · `capital_adequacy` —— 资本充足率(总)(%)，部分行 EM 返回 nan 则保留底表值
+     · `tier1_adequacy` —— 一级资本充足率(%)，底表参考（评分仍用核心一级 `core_tier1`）
+     · `provision_ratio` —— 拨贷比(%)，**非**拨备覆盖率
+     所有字段含 NaN 守卫（NaN != NaN），EM 返回 nan 时跳过、保留底表手工值（不回退、不报错）。其中 `npl` 进五维评分（资产质量维）；`tier1_adequacy`/`capital_adequacy`/`provision_ratio` 目前仅写回底表参考，五维评分仍用人工维护的 `core_tier1`(核心一级) 与 `provision_coverage`(拨备覆盖率)。注：拨备覆盖率(`provision_coverage`)/核心一级(`core_tier1`)/杠杆率/存款结构/RORWA 在 EM 无对应字段，仍按季度手工维护。
+- **为什么不全自动**：akshare 旧版 `stock_financial_analysis_indicator`（非 `_em`）已失效，利润表/资产负债表原始科目列名漂移，港股接口在沙箱不稳定。但东财 `_em` 版 `stock_financial_analysis_indicator_em` 实测可用，已接入**不良率 / 资本充足率(总) / 一级资本充足率 / 拨贷比** 4 个质量字段的自动刷新；剩余仍人工季度更新的字段：**拨备覆盖率 / 核心一级资本充足率 / 存款结构 / RORWA / 零售护城河**。BVPS/ROE/EPS/div_ps/非息占比/净息差 已实现自动或半自动刷新。
 
 ## 每日运行
 
@@ -110,10 +116,11 @@ https://raw.githubusercontent.com/homjanon/cmb-tracker/main/output/cmb_report.js
 | 自动化 | 字段 | 来源 |
 |--------|------|------|
 | 自动 | BVPS / ROE / EPS(年化) / div_ps(每股分红) | akshare（`refresh_light` / `refresh_div`） |
+| 自动 | 不良率(npl) / 资本充足率(总)(capital_adequacy) / 一级资本充足率(tier1_adequacy) / 拨贷比(provision_ratio) | 东财 `refresh_deep`（NaN 守卫：EM 返回 nan 则保留底表值） |
 | 半自动 | 非息收入占比 | 必盈利润表 API（`refresh_nii`，需 `BIYING_API_KEY`） |
-| 手工 | 不良率 / 拨备覆盖率 / 核心一级资本充足率 / 存款结构 / RORWA / 零售护城河 | 季度人工更新 `fundamentals.json` |
+| 手工 | 拨备覆盖率 / 核心一级资本充足率 / 存款结构 / RORWA / 零售护城河 | 季度人工更新 `fundamentals.json` |
 
-- **手工字段随季报更新**：直接编辑 `fundamentals.json` 对应字段，并改 `as_of`（如 `2026Q1`）。这些字段在 `_manual_maintain` 列表中，刷新时不会被覆盖。
+- **手工字段随季报更新**：直接编辑 `fundamentals.json` 对应字段，并改 `as_of`（如 `2026Q1`）。这些字段在 `_manual_maintain` 列表中标记、`refresh_deep` 不返回故不被覆盖（拨备覆盖率/核心一级/存款结构/RORWA/零售护城河）；`npl` 已改为自动，已从 `_manual_maintain` 移除。
 - **派息率 `div_payout`** 由 `div_ps ÷ 年化EPS` 自动算出，已从 `_manual_maintain` 移除，无需手工填。
 - 运行 `python calibration.py` 可查看当前评分与缺失字段。
 

@@ -3,7 +3,6 @@
     "as_of": "2026Q1",
     "manual": true,
     "_manual_maintain": [
-      "npl",
       "provision_coverage",
       "core_tier1",
       "current_deposit_ratio",
@@ -35,7 +34,6 @@
     "as_of": "2026Q1",
     "manual": true,
     "_manual_maintain": [
-      "npl",
       "provision_coverage",
       "core_tier1",
       "current_deposit_ratio",
@@ -66,7 +64,6 @@
     "as_of": "2026Q1",
     "manual": true,
     "_manual_maintain": [
-      "npl",
       "provision_coverage",
       "core_tier1",
       "current_deposit_ratio",
@@ -97,7 +94,6 @@
     "as_of": "2026Q1",
     "manual": true,
     "_manual_maintain": [
-      "npl",
       "provision_coverage",
       "core_tier1",
       "current_deposit_ratio",
@@ -128,7 +124,6 @@
     "as_of": "2026Q1",
     "manual": true,
     "_manual_maintain": [
-      "npl",
       "provision_coverage",
       "core_tier1",
       "current_deposit_ratio",
@@ -159,7 +154,6 @@
     "as_of": "2026Q1",
     "manual": true,
     "_manual_maintain": [
-      "npl",
       "provision_coverage",
       "core_tier1",
       "current_deposit_ratio",
