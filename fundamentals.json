@@ -144,7 +144,10 @@
     "research_rating": "增持",
     "research_count_1m": 0,
     "research_institution": "太平洋",
-    "research_as_of": "2026-04-29"
+    "research_as_of": "2026-04-29",
+    "research_target_rating": "买入",
+    "research_target_institution": "长江证券",
+    "research_target_as_of": "2026-06-29"
   },
   "601988": {
     "as_of": "2026Q1",
@@ -217,6 +220,12 @@
     "research_rating": "买入",
     "research_count_1m": 0,
     "research_institution": "东海证券",
-    "research_as_of": "2026-04-30"
+    "research_as_of": "2026-04-30",
+    "research_target_price": 40.03,
+    "research_target_low": 40.03,
+    "research_target_high": 40.03,
+    "research_target_rating": "买入",
+    "research_target_institution": "广发证券",
+    "research_target_as_of": "2026-07-09"
   }
 }
