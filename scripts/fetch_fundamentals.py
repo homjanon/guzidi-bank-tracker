@@ -12,7 +12,7 @@
     [兜底]   非息收入占比            —— 必盈利润表(income)推算，仅当东财 REVENUE_RATIO 缺失且设 BIYING_API_KEY 时启用
     [手工]   拨备覆盖率/核心一级资本充足率/存款结构/RORWA/零售护城河
              —— 季度人工维护，见 fundamentals.json 的 _manual_maintain 标记，写回时不被 refresh_deep 覆盖
-  → 设计：refresh_light() + refresh_nii() + refresh_deep() + refresh_research() + refresh_target_price() 每日调用；手工质量字段以 fundamentals.json 为真源。
+  → 设计：refresh_light() + refresh_nii() + refresh_deep() + refresh_research() 每日调用；手工质量字段以 fundamentals.json 为真源。
 """
 
 from datetime import datetime, timedelta
@@ -275,68 +275,4 @@ def refresh_research(banks) -> dict:
     return out
 
 
-def refresh_target_price(banks, cache: dict = None) -> dict:
-    """自动：目标价（巨潮 cninfo）。来源 stock_rank_forecast_cninfo(date)，按发布日期倒序
-    取每只银行最近一次含目标价/评级的记录。该接口为「按日」维度（返回当日全部个股评级），
-    故回探最近若干交易日；命中率取决于券商近期是否覆盖，缺失则留空。
-    采用底表缓存：仅当新发布日期 > 已存 research_target_as_of 才回写，旧值保留
-    （目标价为事件更新、不每日变，避免每日回探全量且让历史目标价稳定展示）。
-    返回 {code: {research_target_price, research_target_low, research_target_high,
-                 research_target_rating, research_target_institution, research_target_as_of}}。
-    仅作展示，不进五维评分。"""
-    out = {}
-    try:
-        import akshare as ak
-        from datetime import date, timedelta
-        codes = {b.code for b in banks}
-        cache = cache or {}
-        # 回探最近 25 个交易日
-        d = date.today(); days = []
-        while len(days) < 25:
-            if d.weekday() < 5:
-                days.append(d.strftime("%Y%m%d"))
-            d -= timedelta(days=1)
-        best = {}   # code -> (publish_date, rating, low, high, institution)
-        for dt in days:
-            try:
-                df = ak.stock_rank_forecast_cninfo(date=dt)
-            except Exception:
-                continue
-            if df is None or getattr(df, "empty", True):
-                continue
-            hit = df[df["证券代码"].isin(codes)]
-            for _, r in hit.iterrows():
-                c = str(r["证券代码"])
-                pub = str(r.get("发布日期"))[:10]
-                cur = best.get(c)
-                if cur is None or pub > cur[0]:
-                    best[c] = (pub, r.get("投资评级"),
-                               _f(r.get("目标价格-下限")), _f(r.get("目标价格-上限")),
-                               r.get("研究机构简称"))
-        # 仅当新发布日期 > 缓存时才回写
-        for c, (pub, rating, low, high, inst) in best.items():
-            old = cache.get(c, {}).get("research_target_as_of")
-            if old and pub <= str(old)[:10]:
-                continue
-            rec = {}
-            tp = None
-            if low is not None and low == low:
-                tp = low if (high is None or high != high or high < low) else round((low + high) / 2, 2)
-            elif high is not None and high == high:
-                tp = high
-            if tp is not None:
-                rec["research_target_price"] = tp
-                rec["research_target_low"] = None if (low is None or low != low) else low
-                rec["research_target_high"] = None if (high is None or high != high) else high
-            if rating is not None and str(rating).strip():
-                rec["research_target_rating"] = str(rating).strip()
-            if inst is not None and str(inst).strip():
-                rec["research_target_institution"] = str(inst).strip()
-            rec["research_target_as_of"] = pub
-            if rec:
-                out[c] = rec
-                print(f"    [refresh_target_price] {c} 目标价 {rec.get('research_target_price')} "
-                      f"({rec.get('research_target_rating')}, {rec.get('research_target_institution')}, {pub})")
-    except Exception as e:
-        print(f"    [refresh_target_price] 巨潮目标价失败，跳过：{e}")
-    return out
+# refresh_target_price() 已移除（2026-07-15）：巨潮 stock_rank_forecast_cninfo 每日回探25个交易日数据量大、大部分时间不更新，按用户要求删除。

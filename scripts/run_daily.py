@@ -43,13 +43,11 @@ def main():
     nii = ff.refresh_nii(banks)                       # 非息占比兜底（必盈，仅当东财 REVENUE_RATIO 缺失时启用）
     deep = ff.refresh_deep(banks)                     # 东财 F10 指标（净息差 + 不良率/资本充足率/一级资本充足率/拨贷比，自动）
     research = ff.refresh_research(banks)             # 分析师研报评级（东财，事件字段，不进评分）
-    target = ff.refresh_target_price(banks, fund_cache)  # 目标价(巨潮 cninfo，事件字段，带缓存，不进评分)
     merged = {}
     for b in banks:
         base = fund_cache.get(b.code, {})
         rec = dict(base)
-        for src in (refreshed.get(b.code, {}), deep.get(b.code, {}), research.get(b.code, {}),
-                    target.get(b.code, {})):
+        for src in (refreshed.get(b.code, {}), deep.get(b.code, {}), research.get(b.code, {})):
             rec.update({k: v for k, v in src.items() if v is not None})
         # 非息占比：东财 REVENUE_RATIO 为主源（自动，来自 refresh_deep），必盈仅当 EM 无值时兜底
         if rec.get("non_interest_ratio") is None:
@@ -70,8 +68,7 @@ def main():
             print(f"    已刷新 {len([1 for v in refreshed.values() if v])} 只 BVPS/ROE/EPS、"
                   f"{len([1 for v in deep.values() if v])} 只东财指标(含非息占比REVENUE_RATIO)、"
                   f"{len([1 for v in nii.values() if v])} 只非息占比(必盈兜底)、"
-                  f"{len([1 for v in research.values() if v])} 只研报评级、"
-                  f"{len([1 for v in target.values() if v])} 只目标价(巨潮)")
+                  f"{len([1 for v in research.values() if v])} 只研报评级")
     # 分红自动刷新（近365天已实施分红求和÷10）
     div = ff.refresh_div(banks)
     if div:

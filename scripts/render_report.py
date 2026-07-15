@@ -46,12 +46,7 @@ def build(rows, merged, t0):
             "research_count_1m": f.get("research_count_1m"),
             "research_institution": f.get("research_institution"),
             "research_as_of": f.get("research_as_of"),
-            "research_target_price": f.get("research_target_price"),
-            "research_target_low": f.get("research_target_low"),
-            "research_target_high": f.get("research_target_high"),
-            "research_target_rating": f.get("research_target_rating"),
-            "research_target_institution": f.get("research_target_institution"),
-            "research_target_as_of": f.get("research_target_as_of"),
+            # research_target_* 已移除（2026-07-15）：巨潮 stock_rank_forecast_cninfo 数据量大且不常更新
             "score_total": sc["total"],
             "score_dims": dims,
             "signal": sig["signal"],

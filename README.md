@@ -50,7 +50,7 @@
      · `non_interest_ratio` —— 非息收入占比(%)，**自动主源**：6 行实测 21~29%（招行 28.47 / 工行 21.18 / 宁波 25.71），与披露吻合；**替代必盈成为非息占比的自动主源**（无需 key），必盈仅作缺失兜底
      所有字段含 NaN 守卫（NaN != NaN），EM 返回 nan 时跳过、保留底表手工值（不回退、不报错）。其中 `npl`/`non_interest_ratio` 进五维评分（`npl`→资产质量维、`non_interest_ratio`→中间业务维）；`tier1_adequacy`/`capital_adequacy`/`provision_ratio` 目前仅写回底表参考，五维评分仍用人工维护的 `core_tier1`(核心一级) 与 `provision_coverage`(拨备覆盖率)。注：拨备覆盖率(`provision_coverage`)/核心一级(`core_tier1`)/杠杆率/存款结构/RORWA 在 EM 无对应字段，仍按季度手工维护。
   - `refresh_research()`：**每日**用 akshare `stock_research_report_em` 自动抓取分析师研报评级（东财评级 + 近一月研报数 + 最新机构），写回底表并在网页新增「分析师研报评级」面板展示。**仅作展示，不进入五维评分（评分体系已固化）**。
-  - `refresh_target_price()`：**每日**用 akshare `stock_rank_forecast_cninfo(date)`（巨潮资讯）回探最近 25 个交易日，取每只银行最新一次**目标价（下限/上限）**与评级（投资评级 + 研究机构 + 发布日期），写回底表并在研报面板新增「目标价(巨潮)」列。**仅作展示，不进五维评分**。该接口为按日维度、券商覆盖稀疏（招行/宁波常有目标价，农行/工行多为 NaN、建行/中行常无近期记录），故**缺失则留空**；采用底表缓存，仅当新发布日期晚于已存值才回写，使历史目标价稳定展示。
+  - `refresh_target_price()` 已移除（2026-07-15）：巨潮 `stock_rank_forecast_cninfo` 每日回探 25 个交易日数据量大、大部分时间不更新，按用户要求删除。
   - 北向资金个股持股：原计划接入 `stock_hsgt_individual_em`，但实测该接口数据止于 **2024-08-16**，且 2024-08-19 起沪深港通暂停北向披露（聚合北向 `资金净流入` 亦归零），免费源已无当前北向数据 → **本阶段不接入**，留待付费源（必盈/Wind/Choice）或仅用南向。
 - **为什么不全自动**：akshare 旧版 `stock_financial_analysis_indicator`（非 `_em`）已失效，利润表/资产负债表原始科目列名漂移，港股接口在沙箱不稳定。但东财 `_em` 版 `stock_financial_analysis_indicator_em` 实测可用，已接入**不良率 / 资本充足率(总) / 一级资本充足率 / 拨贷比 / 非息收入占比(REVENUE_RATIO)** 5 个字段的自动刷新；剩余仍人工季度更新的字段：**拨备覆盖率 / 核心一级资本充足率 / 存款结构 / RORWA / 零售护城河**。BVPS/ROE/EPS/div_ps/非息占比/净息差(NIM) 已实现自动刷新，必盈 API 仅作非息占比缺失兜底。
 
@@ -123,7 +123,7 @@ https://raw.githubusercontent.com/homjanon/cmb-tracker/main/output/cmb_report.js
 | 自动 | 不良率(npl) / 资本充足率(总)(capital_adequacy) / 一级资本充足率(tier1_adequacy) / 拨贷比(provision_ratio) / 非息收入占比(non_interest_ratio) | 东财 `refresh_deep`（NaN 守卫：EM 返回 nan 则保留底表值） |
 | 兜底 | 非息收入占比 | 必盈利润表 API（`refresh_nii`，仅当东财 `REVENUE_RATIO` 缺失且设 `BIYING_API_KEY` 时启用） |
 | 展示 | 分析师研报评级（东财评级/近一月研报数/最新机构） | 东财 `refresh_research`（**不进五维评分**） |
-| 展示 | 目标价(巨潮)（目标价下限/上限·投资评级·机构·发布日期） | 巨潮 `refresh_target_price`（**不进五维评分**，券商未覆盖则留空） |
+| 已移除 | 目标价(巨潮)（2026-07-15：数据量大且不常更新，按用户要求删除） | — |
 | 手工 | 拨备覆盖率 / 核心一级资本充足率 / 存款结构 / RORWA / 零售护城河 | 季度人工更新 `fundamentals.json` |
 
 - **手工字段随季报更新**：直接编辑 `fundamentals.json` 对应字段，并改 `as_of`（如 `2026Q1`）。这些字段在 `_manual_maintain` 列表中标记、`refresh_deep` 不返回故不被覆盖（拨备覆盖率/核心一级/存款结构/RORWA/零售护城河）；`npl` 已改为自动，已从 `_manual_maintain` 移除。

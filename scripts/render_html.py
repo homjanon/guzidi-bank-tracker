@@ -109,22 +109,13 @@ def render(rows, fund, t0, out_path):
     for r in rows:
         f = fund.get(r["code"], {})
         rating = f.get("research_rating")
-        tp = f.get("research_target_price")
-        tp_inst = f.get("research_target_institution")
-        tp_asof = f.get("research_target_as_of")
         cnt = f.get("research_count_1m")
         inst = f.get("research_institution")
         ra = f.get("research_as_of")
-        if tp is not None:
-            tp_cell = (f'{tp}<br><span class="code">{tp_inst or ""}'
-                       f'{" · " + tp_asof if tp_asof else ""}</span>')
-        else:
-            tp_cell = "—"
         trs_research.append(f"""
         <tr>
           <td><b>{r['name']}</b></td>
           <td>{rating if rating else '—'}</td>
-          <td class="num">{tp_cell}</td>
           <td>{inst if inst else '—'}</td>
           <td class="num">{cnt if cnt is not None else '—'}</td>
           <td class="code">{ra or '—'}</td>
@@ -183,10 +174,10 @@ def render(rows, fund, t0, out_path):
 
 <div class="panel" style="margin-top:16px"><h3>分析师研报评级（事件更新 · 不计入五维评分）</h3>
 <table>
-<tr><th>银行</th><th>东财评级</th><th class="num">目标价(巨潮)</th><th>最新机构</th><th class="num">近一月研报</th><th>数据日期</th></tr>
+<tr><th>银行</th><th>东财评级</th><th>最新机构</th><th class="num">近一月研报</th><th>数据日期</th></tr>
 {''.join(trs_research)}
 </table>
-<div class="note" style="margin-top:8px">目标价来自巨潮资讯 `stock_rank_forecast_cninfo`（投资评级+目标价下限/上限），按发布日期取最新；券商未近期覆盖则留空。东财评级覆盖全部 6 家，目标价仅在有覆盖时显示。</div></div>
+</div>
 
 <div class="note">
 <b>方法论</b>：评分采用招招五维模型（资产质量/负债结构/中间业务/资本实力/管理层，每维0-20，总分0-100）。
